@@ -3,205 +3,173 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>من أين تبث محطات الإذاعة؟ | محاكاة AM</title>
+  <title>محاكاة راديو AM | صوتين + تشويش</title>
   <style>
-    :root{
-      --bg:#f6f7fb; --card:#fff; --text:#111827; --muted:#6b7280;
-      --line:#e5e7eb; --blue:#2563eb; --dark:#111827;
-      --ok:#22c55e; --mid:#f59e0b; --low:#ef4444;
-      --r:16px;
-    }
+    :root{--bg:#f6f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--blue:#2563eb;--dark:#111827;
+      --ok:#22c55e;--mid:#f59e0b;--low:#ef4444;--r:16px;}
     *{box-sizing:border-box}
-    body{margin:0; padding:18px; background:var(--bg); color:var(--text);
-         font-family:system-ui,-apple-system,"Tajawal",Arial}
-    .wrap{max-width:1150px; margin:auto; display:grid; gap:16px;
-          grid-template-columns: 1.1fr 1fr;}
-    .card{background:var(--card); border-radius:var(--r);
-          box-shadow:0 10px 25px rgba(0,0,0,.07);
-          padding:16px;}
-    h1{margin:0 0 6px; font-size:18px}
-    .sub{margin:0 0 14px; color:var(--muted); font-size:13px}
-    label{display:block; font-size:13px; color:#374151; margin:10px 0 6px}
-    input, select, button{font:inherit}
-    input[type="text"], select{
-      width:100%; padding:10px 12px; border:1px solid var(--line);
-      border-radius:12px; background:#fff;
-    }
+    body{margin:0;padding:18px;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Tajawal",Arial}
+    .wrap{max-width:1050px;margin:auto;display:grid;gap:16px;grid-template-columns:1.15fr .85fr}
+    .card{background:var(--card);border-radius:var(--r);box-shadow:0 10px 25px rgba(0,0,0,.07);padding:16px}
+    h1{margin:0 0 6px;font-size:18px}
+    .sub{margin:0 0 14px;color:var(--muted);font-size:13px}
+    label{display:block;font-size:13px;color:#374151;margin:10px 0 6px}
+    input,button{font:inherit}
     input[type="range"]{width:100%}
-    .grid2{display:grid; gap:10px; grid-template-columns:1fr 1fr}
-    .radioUI{
-      border:1px solid var(--line); border-radius:18px; padding:14px;
-      background:linear-gradient(135deg,#b8f1ff 0%, #74d8ef 60%, #5fc3db 100%);
-      position:relative; overflow:hidden;
-      min-height:320px;
-    }
-    .radioUI::before{
-      content:""; position:absolute; inset:-30px;
-      background:radial-gradient(circle at 20% 70%, rgba(255,255,255,.35), transparent 55%);
-      pointer-events:none;
-    }
-    .dial{
-      background:#ffffffb8; border:1px solid rgba(0,0,0,.08);
-      border-radius:14px; padding:10px 12px;
-    }
-    .scale{display:flex; gap:10px; align-items:center; margin-bottom:6px}
-    .scale b{min-width:60px}
-    .freqLine{display:flex; justify-content:space-between; font-size:11px; color:#374151; opacity:.85}
-    .meter{display:flex; align-items:center; gap:10px; margin-top:10px}
-    .dot{width:12px; height:12px; border-radius:999px; background:#cfd4dc}
-    .dot.on.ok{background:var(--ok)}
-    .dot.on.mid{background:var(--mid)}
-    .dot.on.low{background:var(--low)}
-    .badge{padding:6px 10px; border-radius:999px; font-size:12px;
-           background:#ffffffc9; border:1px solid rgba(0,0,0,.08)}
-    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
-    button{border:0; border-radius:12px; padding:10px 12px; cursor:pointer}
-    .btn{background:var(--blue); color:#fff}
-    .btn2{background:var(--dark); color:#fff}
-    .ghost{background:#e5e7eb; color:#111827}
-    table{width:100%; border-collapse:collapse; border:1px solid var(--line);
-          overflow:hidden; border-radius:14px}
-    th,td{padding:10px; border-bottom:1px solid var(--line); font-size:13px; text-align:center}
-    th{background:#f3f4f6; font-weight:700}
-    .note{margin:10px 0 0; color:var(--muted); font-size:12px}
-    @media (max-width: 980px){ .wrap{grid-template-columns:1fr} }
+    input[type="number"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .radioUI{border:1px solid var(--line);border-radius:18px;padding:14px;background:linear-gradient(135deg,#b8f1ff 0%,#74d8ef 60%,#5fc3db 100%);min-height:270px}
+    .dial{background:#ffffffb8;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:10px 12px}
+    .freqLine{display:flex;justify-content:space-between;font-size:11px;color:#374151;opacity:.85}
+    .badge{padding:6px 10px;border-radius:999px;font-size:12px;background:#ffffffc9;border:1px solid rgba(0,0,0,.08)}
+    .meter{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .dot{width:12px;height:12px;border-radius:999px;background:#cfd4dc}
+    .dot.on.ok{background:var(--ok)} .dot.on.mid{background:var(--mid)} .dot.on.low{background:var(--low)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button{border:0;border-radius:12px;padding:10px 12px;cursor:pointer}
+    .btn{background:var(--blue);color:#fff}
+    .ghost{background:#e5e7eb;color:#111827}
+    .grid2{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+    @media (max-width:900px){.wrap{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="card">
-      <h1>محاكاة: من أين تبث محطات الإذاعة؟ (AM)</h1>
-      <p class="sub">اضبطي التردد، اختاري محطة/مدن، ثم أضيفي النتائج في جدول جمع البيانات.</p>
+  <div class="card">
+    <h1>محاكاة راديو AM (صوتين + تشويش)</h1>
+    <p class="sub">ضعي ترددين للمحطتين… عند الاقتراب منهما يتغير الصوت مثل الفيديو.</p>
 
-      <div class="radioUI">
-
-        <div class="dial">
-          <div class="scale">
-            <b>AM</b>
-            <span style="font-size:13px">التردد (kHz): <b id="freqLabel">800</b></span>
-          </div>
-
-          <input id="freq" type="range" min="540" max="1690" step="1" value="800" />
-          <div class="freqLine">
-            <span>540</span><span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span><span>1690</span>
-          </div>
+    <div class="radioUI">
+      <div class="dial">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div>AM — التردد (kHz): <b id="freqLabel">800</b></div>
+          <div class="badge">الحالة: <b id="state">مطفأ</b> | الآن: <b id="nowPlaying">—</b></div>
         </div>
 
-        <div class="grid2" style="margin-top:12px">
-          <div>
-            <label>اسم محطة الإذاعة</label>
-            <select id="station">
-              <option value="القرآن الكريم" data-f="793">القرآن الكريم (793)</option>
-              <option value="هنا القاهرة" data-f="900">هنا القاهرة (900)</option>
-              <option value="إذاعة الرياض" data-f="747">إذاعة الرياض (747)</option>
-            </select>
-          </div>
-
-          <div>
-            <label>قوة الإشارة</label>
-            <div class="meter">
-              <span class="badge">النتيجة: <b id="strengthText">—</b></span>
-              <div class="dot ok" id="d_ok" title="قوية"></div>
-              <div class="dot mid" id="d_mid" title="متوسطة"></div>
-              <div class="dot low" id="d_low" title="ضعيفة"></div>
-            </div>
-          </div>
+        <input id="freq" type="range" min="540" max="1690" step="1" value="800" />
+        <div class="freqLine">
+          <span>540</span><span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span><span>1690</span>
         </div>
 
-        <div class="grid2" style="margin-top:6px">
-          <div>
-            <label>مكان البث (مدينة)</label>
-            <select id="txCity"></select>
-          </div>
-          <div>
-            <label>مكاني (مدينة)</label>
-            <select id="rxCity"></select>
-          </div>
+        <div class="meter">
+          <span class="badge">قوة الإشارة: <b id="strengthText">—</b></span>
+          <div class="dot ok" id="d_ok" title="قوية"></div>
+          <div class="dot mid" id="d_mid" title="متوسطة"></div>
+          <div class="dot low" id="d_low" title="ضعيفة"></div>
         </div>
-
-        <div class="grid2" style="margin-top:6px">
-          <div>
-            <label>البعد (km) (محسوب)</label>
-            <input id="dist" type="text" readonly />
-          </div>
-          <div>
-            <label>ملاحظات</label>
-            <input id="note" type="text" placeholder="اختياري" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="add">إضافة للجدول</button>
-          <button class="ghost" id="snap">ضبط التردد على المحطة</button>
-        </div>
-
-        <p class="note">
-          مدى AM مضبوط 540–1690 kHz كما في النشاط. :contentReference[oaicite:1]{index=1}
-        </p>
       </div>
-    </div>
 
-    <div class="card">
-      <h1>جدول جمع البيانات</h1>
-      <p class="sub">يمكنك حذف صف، أو تصدير CSV (يفتح في Excel).</p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>التردد (kHz)</th>
-            <th>اسم المحطة</th>
-            <th>قوة الإشارة</th>
-            <th>مكان البث</th>
-            <th>مكاني</th>
-            <th>البعد (km)</th>
-            <th>ملاحظات</th>
-            <th>حذف</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+      <div class="grid2" style="margin-top:10px">
+        <div>
+          <label>تردد المحطة 1 (kHz)</label>
+          <input id="st1" type="number" value="793" min="540" max="1690" />
+        </div>
+        <div>
+          <label>تردد المحطة 2 (kHz)</label>
+          <input id="st2" type="number" value="900" min="540" max="1690" />
+        </div>
+      </div>
 
       <div class="actions">
-        <button class="btn2" id="export">تصدير CSV</button>
-        <button class="ghost" id="clear">مسح الجدول</button>
+        <button class="btn" id="toggle">تشغيل</button>
+        <button class="ghost" id="snap1">اذهب للمحطة 1</button>
+        <button class="ghost" id="snap2">اذهب للمحطة 2</button>
       </div>
-    </div>
 
+      <p class="sub" style="margin-top:10px">
+        * “قوية/متوسطة/ضعيفة” تعتمد على قربك من أحد الترددين. خارج النطاق تسمعين تشويش فقط.
+      </p>
+    </div>
   </div>
+
+  <div class="card">
+    <h1>ملاحظة سريعة</h1>
+    <p class="sub">
+      إذا تبين الصوتين يكونون **ملفات حقيقية** (مثلاً قرآن + إذاعة)، ارفعي هنا ملفين mp3
+      وأنا أبدّل الصوت الصناعي بملفاتك مباشرة.
+    </p>
+  </div>
+
+</div>
 
 <script>
   const $ = (id)=>document.getElementById(id);
 
-  // مدن (عدّلي/زيدي حسب حاجتك)
-  const CITIES = [
-    {name:"الرياض", lat:24.7136, lon:46.6753},
-    {name:"جدة", lat:21.4858, lon:39.1925},
-    {name:"مكة", lat:21.3891, lon:39.8579},
-    {name:"المدينة", lat:24.5247, lon:39.5692},
-    {name:"الدمام", lat:26.4207, lon:50.0888},
-    {name:"أبها", lat:18.2465, lon:42.5117},
-    {name:"بيشة", lat:20.0129, lon:42.6052},
-    {name:"تبوك", lat:28.3838, lon:36.5662},
-    {name:"القاهرة", lat:30.0444, lon:31.2357},
-  ];
+  // -------- WebAudio: Station1, Station2, Static --------
+  let ctx=null, running=false;
 
-  function haversineKm(a,b){
-    const R=6371;
-    const toRad = d=>d*Math.PI/180;
-    const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
-    const lat1=toRad(a.lat), lat2=toRad(b.lat);
-    const s = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
-    return 2*R*Math.asin(Math.sqrt(s));
+  // station 1 nodes
+  let s1oscA=null, s1oscB=null, s1gain=null;
+  // station 2 nodes
+  let s2osc=null, s2lfo=null, s2lfoGain=null, s2gain=null;
+  // static
+  let noise=null, noiseGain=null;
+
+  let master=null;
+
+  function makeWhiteNoise(ctx){
+    const bufferSize = 2 * ctx.sampleRate;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i=0;i<bufferSize;i++) data[i] = Math.random()*2-1;
+    const src = ctx.createBufferSource();
+    src.buffer = buffer; src.loop = true;
+    return src;
   }
 
-  function estimateStrength(freq, targetFreq, distKm){
-    // نموذج تقديري بسيط (نعدّله ليتطابق مع الفيديو إذا تبين)
-    const df = Math.abs(freq - targetFreq);      // فرق التردد
-    const d  = isFinite(distKm) ? distKm : 9999; // المسافة
-    const score = Math.max(0, 100 - df*0.7 - d*0.12);
-    if (score >= 60) return "قوية";
-    if (score >= 30) return "متوسطة";
+  function ensureAudio(){
+    if(ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    master = ctx.createGain();
+    master.gain.value = 0.45;
+    master.connect(ctx.destination);
+
+    // Station 1: “صوت 1” (نغمتين معًا كأنه بث ثابت)
+    s1oscA = ctx.createOscillator(); s1oscA.type="sine";
+    s1oscB = ctx.createOscillator(); s1oscB.type="triangle";
+    s1gain = ctx.createGain(); s1gain.gain.value = 0;
+    s1oscA.connect(s1gain); s1oscB.connect(s1gain);
+    s1gain.connect(master);
+    s1oscA.start(); s1oscB.start();
+
+    // Station 2: “صوت 2” (نغمة مختلفة مع اهتزاز بسيط Vibrato)
+    s2osc = ctx.createOscillator(); s2osc.type="square";
+    s2gain = ctx.createGain(); s2gain.gain.value = 0;
+
+    s2lfo = ctx.createOscillator(); s2lfo.type="sine"; s2lfo.frequency.value = 6; // vibrato speed
+    s2lfoGain = ctx.createGain(); s2lfoGain.gain.value = 10; // vibrato depth (Hz)
+    s2lfo.connect(s2lfoGain).connect(s2osc.frequency);
+
+    s2osc.connect(s2gain).connect(master);
+    s2osc.start(); s2lfo.start();
+
+    // Static (تشويش)
+    noise = makeWhiteNoise(ctx);
+    noiseGain = ctx.createGain(); noiseGain.gain.value = 0;
+    noise.connect(noiseGain).connect(master);
+    noise.start();
+  }
+
+  // تحويل kHz إلى تردد سمعي (حتى يصير “إحساس تغيير محطة”)
+  function audibleHzFromKhz(khz){
+    // 540..1690 => ~180..720 Hz
+    return 180 + (khz - 540) * (540 / (1690 - 540));
+  }
+
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  // قرب التردد: يعطي “جودة استقبال” 0..1
+  function quality(khz, stationKhz){
+    const df = Math.abs(khz - stationKhz);
+    // 0 فرق => 1.0 / 40kHz => قوي / 120kHz => متوسط / أكبر => ضعيف
+    const q = 1 - (df / 220); // عدّليها لو تبين المحطات “أضيق/أوسع”
+    return clamp01(q);
+  }
+
+  function strengthLabel(q){
+    if(q >= 0.72) return "قوية";
+    if(q >= 0.35) return "متوسطة";
     return "ضعيفة";
   }
 
@@ -213,91 +181,79 @@
     $("strengthText").textContent = level;
   }
 
-  function fillCities(){
-    const makeOpt = (c)=> {
-      const o=document.createElement("option");
-      o.value=c.name; o.textContent=c.name;
-      return o;
-    }
-    CITIES.forEach(c=>{
-      $("txCity").appendChild(makeOpt(c));
-      $("rxCity").appendChild(makeOpt(c));
-    });
-    $("txCity").value="الرياض";
-    $("rxCity").value="بيشة";
-  }
+  function setNowPlaying(text){ $("nowPlaying").textContent = text; }
 
-  function getCity(name){ return CITIES.find(c=>c.name===name); }
+  function applyAudio(){
+    if(!ctx) return;
+
+    const khz = Number($("freq").value);
+    const st1 = Number($("st1").value);
+    const st2 = Number($("st2").value);
+
+    // نحسب جودة الاستقبال لكل محطة
+    const q1 = quality(khz, st1);
+    const q2 = quality(khz, st2);
+
+    // نختار الأقوى
+    const pick1 = q1 >= q2;
+    const q = pick1 ? q1 : q2;
+
+    // مستوى التشويش مقابل الصوت (كلما زادت الجودة قل التشويش)
+    // لما ما فيه محطة قريبة: q يكون صغير -> تشويش عالي
+    const staticLevel = running ? (0.22 * (1 - q)) : 0;
+    noiseGain.gain.setTargetAtTime(staticLevel, ctx.currentTime, 0.03);
+
+    // إذا q منخفض جدًا، اعتبره “لا محطة”
+    const hasStation = q > 0.10;
+
+    // اضبط ترددات أصوات المحطات (حتى تتغير شوي مع السلايدر)
+    const baseHz = audibleHzFromKhz(khz);
+
+    // Station 1 sound
+    s1oscA.frequency.setTargetAtTime(baseHz, ctx.currentTime, 0.02);
+    s1oscB.frequency.setTargetAtTime(baseHz * 1.5, ctx.currentTime, 0.02);
+
+    // Station 2 sound
+    s2osc.frequency.setTargetAtTime(baseHz * 1.15, ctx.currentTime, 0.02);
+
+    // توزيع الصوت: بس محطة واحدة تشتغل حسب الأقوى
+    const stationVol = running && hasStation ? (0.25 * q) : 0;
+
+    if(pick1){
+      s1gain.gain.setTargetAtTime(stationVol, ctx.currentTime, 0.03);
+      s2gain.gain.setTargetAtTime(0, ctx.currentTime, 0.03);
+      setNowPlaying(hasStation ? "محطة 1" : "تشويش");
+    } else {
+      s2gain.gain.setTargetAtTime(stationVol, ctx.currentTime, 0.03);
+      s1gain.gain.setTargetAtTime(0, ctx.currentTime, 0.03);
+      setNowPlaying(hasStation ? "محطة 2" : "تشويش");
+    }
+
+    paintStrength(strengthLabel(q));
+  }
 
   function refresh(){
     $("freqLabel").textContent = $("freq").value;
-
-    const tx=getCity($("txCity").value);
-    const rx=getCity($("rxCity").value);
-    const dist = (tx && rx) ? haversineKm(tx,rx) : NaN;
-    $("dist").value = isFinite(dist) ? dist.toFixed(0) : "";
-
-    const stOpt = $("station").selectedOptions[0];
-    const targetFreq = Number(stOpt?.dataset?.f || 800);
-    const level = estimateStrength(Number($("freq").value), targetFreq, dist);
-    paintStrength(level);
+    applyAudio();
   }
 
   $("freq").addEventListener("input", refresh);
-  $("station").addEventListener("change", refresh);
-  $("txCity").addEventListener("change", refresh);
-  $("rxCity").addEventListener("change", refresh);
+  $("st1").addEventListener("input", refresh);
+  $("st2").addEventListener("input", refresh);
 
-  $("snap").addEventListener("click", ()=>{
-    const stOpt = $("station").selectedOptions[0];
-    $("freq").value = Number(stOpt.dataset.f || 800);
+  $("snap1").addEventListener("click", ()=>{ $("freq").value = $("st1").value; refresh(); });
+  $("snap2").addEventListener("click", ()=>{ $("freq").value = $("st2").value; refresh(); });
+
+  $("toggle").addEventListener("click", async ()=>{
+    ensureAudio();
+    if(ctx.state === "suspended") await ctx.resume();
+    running = !running;
+    $("state").textContent = running ? "يعمل" : "مطفأ";
+    $("toggle").textContent = running ? "إيقاف" : "تشغيل";
     refresh();
   });
 
-  $("add").addEventListener("click", ()=>{
-    const stOpt = $("station").selectedOptions[0];
-    const targetFreq = Number(stOpt.dataset.f || 800);
-    const freq = Number($("freq").value);
-    const tx = $("txCity").value;
-    const rx = $("rxCity").value;
-    const dist = $("dist").value;
-    const level = $("strengthText").textContent;
-    const note = $("note").value.trim();
-
-    const tr=document.createElement("tr");
-    tr.innerHTML = `
-      <td>${freq}</td>
-      <td>${$("station").value}</td>
-      <td>${level}</td>
-      <td>${tx}</td>
-      <td>${rx}</td>
-      <td>${dist}</td>
-      <td>${note || "—"}</td>
-      <td><button class="ghost" style="padding:6px 10px">✕</button></td>
-    `;
-    tr.querySelector("button").addEventListener("click", ()=>tr.remove());
-    $("tbody").appendChild(tr);
-  });
-
-  $("clear").addEventListener("click", ()=>{ $("tbody").innerHTML=""; });
-
-  $("export").addEventListener("click", ()=>{
-    const head = ["التردد (kHz)","اسم المحطة","قوة الإشارة","مكان البث","مكاني","البعد (km)","ملاحظات"];
-    const rows=[head];
-    [...$("tbody").querySelectorAll("tr")].forEach(tr=>{
-      const tds=[...tr.querySelectorAll("td")].slice(0,7).map(td=>td.textContent);
-      rows.push(tds);
-    });
-    const csv = rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
-    const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="radio_data.csv";
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  fillCities();
+  // init UI
   refresh();
 </script>
 </body>
