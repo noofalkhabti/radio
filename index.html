@@ -1,463 +1,304 @@
 <!doctype html>
-<html lang="ar" dir="rtl" class="h-full">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>راديو تفاعلي - من أين تبث المحطات الإذاعية</title>
-
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
-  <!-- دعم تشغيل HLS (m3u8) على كروم/فايرفوكس، وسفاري غالبًا يدعمه بدونها -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>من أين تبث محطات الإذاعة؟ | محاكاة AM</title>
   <style>
-    * { font-family: 'Cairo', sans-serif; }
-
-    .radio-body{
-      background: linear-gradient(145deg, #8B4513 0%, #5D3A1A 50%, #3D2512 100%);
-      border: 8px solid #2D1810;
-      box-shadow: inset 0 2px 10px rgba(255,255,255,0.1), 0 20px 40px rgba(0,0,0,0.5), 0 0 0 4px #4A3020;
+    :root{
+      --bg:#f6f7fb; --card:#fff; --text:#111827; --muted:#6b7280;
+      --line:#e5e7eb; --blue:#2563eb; --dark:#111827;
+      --ok:#22c55e; --mid:#f59e0b; --low:#ef4444;
+      --r:16px;
     }
-    .dial-track{ background: linear-gradient(to bottom, #1a1a1a, #333, #1a1a1a); border: 3px solid #444; }
-    .dial-knob{ background: linear-gradient(145deg, #FFD700, #B8860B, #8B6914); box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: grab; }
-    .dial-knob:active{ cursor: grabbing; }
-
-    .frequency-display{
-      background: linear-gradient(to bottom, #0a1628, #1a3050);
-      border: 4px solid #2D1810;
-      box-shadow: inset 0 0 20px rgba(0,255,150,0.1);
+    *{box-sizing:border-box}
+    body{margin:0; padding:18px; background:var(--bg); color:var(--text);
+         font-family:system-ui,-apple-system,"Tajawal",Arial}
+    .wrap{max-width:1150px; margin:auto; display:grid; gap:16px;
+          grid-template-columns: 1.1fr 1fr;}
+    .card{background:var(--card); border-radius:var(--r);
+          box-shadow:0 10px 25px rgba(0,0,0,.07);
+          padding:16px;}
+    h1{margin:0 0 6px; font-size:18px}
+    .sub{margin:0 0 14px; color:var(--muted); font-size:13px}
+    label{display:block; font-size:13px; color:#374151; margin:10px 0 6px}
+    input, select, button{font:inherit}
+    input[type="text"], select{
+      width:100%; padding:10px 12px; border:1px solid var(--line);
+      border-radius:12px; background:#fff;
     }
-
-    .signal-led{ width: 12px; height: 12px; border-radius: 50%; transition: all 0.3s ease; }
-    .led-off{ background:#333; box-shadow:none; }
-    .led-red{ background:#ff4444; box-shadow:0 0 10px #ff4444, 0 0 20px #ff4444; }
-    .led-yellow{ background:#ffaa00; box-shadow:0 0 10px #ffaa00, 0 0 20px #ffaa00; }
-    .led-green{ background:#00ff88; box-shadow:0 0 10px #00ff88, 0 0 20px #00ff88; }
-
-    .noise-overlay{
-      position:absolute; inset:0;
+    input[type="range"]{width:100%}
+    .grid2{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+    .radioUI{
+      border:1px solid var(--line); border-radius:18px; padding:14px;
+      background:linear-gradient(135deg,#b8f1ff 0%, #74d8ef 60%, #5fc3db 100%);
+      position:relative; overflow:hidden;
+      min-height:320px;
+    }
+    .radioUI::before{
+      content:""; position:absolute; inset:-30px;
+      background:radial-gradient(circle at 20% 70%, rgba(255,255,255,.35), transparent 55%);
       pointer-events:none;
-      opacity:0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);
-      animation: noise 0.1s infinite;
     }
-    @keyframes noise { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
-    .static-text{ animation: staticFlicker 0.1s infinite; }
-    @keyframes staticFlicker { 0%,100%{opacity:1} 50%{opacity:.8} }
-
-    .speaker-grille{
-      background: repeating-linear-gradient(90deg, #2D1810, #2D1810 3px, #1a0f08 3px, #1a0f08 6px);
+    .dial{
+      background:#ffffffb8; border:1px solid rgba(0,0,0,.08);
+      border-radius:14px; padding:10px 12px;
     }
-    .golden-accent{ background: linear-gradient(90deg, #8B6914, #FFD700, #8B6914); }
-
-    input:focus, select:focus{ outline:none; border-color:#8B4513; box-shadow:0 0 0 3px rgba(139,69,19,0.2); }
+    .scale{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+    .scale b{min-width:60px}
+    .freqLine{display:flex; justify-content:space-between; font-size:11px; color:#374151; opacity:.85}
+    .meter{display:flex; align-items:center; gap:10px; margin-top:10px}
+    .dot{width:12px; height:12px; border-radius:999px; background:#cfd4dc}
+    .dot.on.ok{background:var(--ok)}
+    .dot.on.mid{background:var(--mid)}
+    .dot.on.low{background:var(--low)}
+    .badge{padding:6px 10px; border-radius:999px; font-size:12px;
+           background:#ffffffc9; border:1px solid rgba(0,0,0,.08)}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+    button{border:0; border-radius:12px; padding:10px 12px; cursor:pointer}
+    .btn{background:var(--blue); color:#fff}
+    .btn2{background:var(--dark); color:#fff}
+    .ghost{background:#e5e7eb; color:#111827}
+    table{width:100%; border-collapse:collapse; border:1px solid var(--line);
+          overflow:hidden; border-radius:14px}
+    th,td{padding:10px; border-bottom:1px solid var(--line); font-size:13px; text-align:center}
+    th{background:#f3f4f6; font-weight:700}
+    .note{margin:10px 0 0; color:var(--muted); font-size:12px}
+    @media (max-width: 980px){ .wrap{grid-template-columns:1fr} }
   </style>
 </head>
+<body>
+  <div class="wrap">
 
-<body class="h-full bg-gradient-to-br from-amber-900 via-amber-800 to-stone-900 overflow-auto">
-  <div class="w-full min-h-full p-4 md:p-8">
+    <div class="card">
+      <h1>محاكاة: من أين تبث محطات الإذاعة؟ (AM)</h1>
+      <p class="sub">اضبطي التردد، اختاري محطة/مدن، ثم أضيفي النتائج في جدول جمع البيانات.</p>
 
-    <div class="text-center mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-amber-100 mb-2 drop-shadow-lg">🎙️ من أين تبث المحطات الإذاعية؟</h1>
-      <p class="text-amber-200/80 text-lg">تجربة تفاعلية لاستكشاف موجات الراديو</p>
-    </div>
+      <div class="radioUI">
 
-    <div class="max-w-4xl mx-auto">
-      <div class="radio-body rounded-3xl p-6 md:p-8">
-        <div class="golden-accent h-2 rounded-full mb-6"></div>
+        <div class="dial">
+          <div class="scale">
+            <b>AM</b>
+            <span style="font-size:13px">التردد (kHz): <b id="freqLabel">800</b></span>
+          </div>
 
-        <div class="frequency-display rounded-xl p-4 mb-6">
-          <div class="relative">
-            <div id="noise-overlay" class="noise-overlay rounded-lg"></div>
-
-            <div class="text-center mb-4">
-              <span class="text-green-400/60 text-sm">AM</span>
-              <div id="current-frequency" class="text-5xl md:text-6xl font-bold text-green-400 tracking-wider"
-                   style="text-shadow: 0 0 20px rgba(0,255,150,0.5);">
-                540 <span class="text-2xl">KHz</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div class="bg-black/30 rounded-lg p-3">
-                <div class="text-green-400/60 text-xs mb-1">اسم الإذاعة</div>
-                <div id="station-name" class="text-green-400 font-bold text-sm md:text-base">---</div>
-              </div>
-              <div class="bg-black/30 rounded-lg p-3">
-                <div class="text-green-400/60 text-xs mb-1">مكان البث</div>
-                <div id="broadcast-location" class="text-green-400 font-bold text-sm md:text-base">---</div>
-              </div>
-              <div class="bg-black/30 rounded-lg p-3">
-                <div class="text-green-400/60 text-xs mb-1">التردد</div>
-                <div id="frequency-display" class="text-green-400 font-bold text-sm md:text-base">--- KHz</div>
-              </div>
-              <div class="bg-black/30 rounded-lg p-3">
-                <div class="text-green-400/60 text-xs mb-1">البعد</div>
-                <div id="distance-display" class="text-green-400 font-bold text-sm md:text-base">--- Km</div>
-              </div>
-            </div>
-
-            <!-- التحكم بالصوت -->
-            <div class="mt-4 bg-black/20 rounded-xl p-4">
-              <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
-                <div class="text-amber-200 font-bold">🔊 الصوت</div>
-
-                <div class="flex gap-2 items-center">
-                  <button id="play-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg shadow">
-                    ▶️ تشغيل
-                  </button>
-                  <button id="pause-btn" class="bg-stone-600 hover:bg-stone-700 text-white font-bold px-4 py-2 rounded-lg shadow">
-                    ⏸️ إيقاف
-                  </button>
-                </div>
-
-                <div class="flex items-center gap-2 w-full md:w-72">
-                  <span class="text-amber-200/80 text-sm">الصوت</span>
-                  <input id="vol" type="range" min="0" max="1" step="0.01" value="0.9" class="w-full accent-amber-500">
-                </div>
-
-                <div id="audio-state" class="text-amber-200/80 text-sm text-center md:text-left">
-                  اختاري محطة ثم اضغطي تشغيل
-                </div>
-              </div>
-
-              <audio id="station-audio" playsinline></audio>
-            </div>
-
+          <input id="freq" type="range" min="540" max="1690" step="1" value="800" />
+          <div class="freqLine">
+            <span>540</span><span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span><span>1690</span>
           </div>
         </div>
 
-        <!-- مقياس التردد -->
-        <div class="mb-6">
-          <div class="flex justify-between text-amber-200/80 text-sm mb-2 px-2">
-            <span>540</span><span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span><span>1600</span>
+        <div class="grid2" style="margin-top:12px">
+          <div>
+            <label>اسم محطة الإذاعة</label>
+            <select id="station">
+              <option value="القرآن الكريم" data-f="793">القرآن الكريم (793)</option>
+              <option value="هنا القاهرة" data-f="900">هنا القاهرة (900)</option>
+              <option value="إذاعة الرياض" data-f="747">إذاعة الرياض (747)</option>
+            </select>
           </div>
 
-          <div class="dial-track rounded-full h-8 relative">
-            <div class="absolute top-0 h-full flex items-center" style="left: calc((621 - 540) / (1600 - 540) * 100%);">
-              <div class="w-1 h-4 bg-red-500 rounded"></div>
+          <div>
+            <label>قوة الإشارة</label>
+            <div class="meter">
+              <span class="badge">النتيجة: <b id="strengthText">—</b></span>
+              <div class="dot ok" id="d_ok" title="قوية"></div>
+              <div class="dot mid" id="d_mid" title="متوسطة"></div>
+              <div class="dot low" id="d_low" title="ضعيفة"></div>
             </div>
-            <div class="absolute top-0 h-full flex items-center" style="left: calc((1161 - 540) / (1600 - 540) * 100%);">
-              <div class="w-1 h-4 bg-yellow-500 rounded"></div>
-            </div>
-
-            <div id="dial-knob" class="dial-knob absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style="left: 0%;">
-              <div class="w-1 h-4 bg-amber-900 rounded"></div>
-            </div>
-          </div>
-
-          <div class="flex justify-between mt-2 px-2">
-            <span class="text-xs text-red-400">● الرياض (621)</span>
-            <span class="text-xs text-yellow-400">● القاهرة (1161)</span>
           </div>
         </div>
 
-        <!-- قوة الإشارة -->
-        <div class="bg-black/20 rounded-xl p-4 mb-6">
-          <div class="text-amber-200 font-bold mb-3 text-center">📡 قوة الإشارة</div>
-          <div class="flex justify-center items-center gap-6">
-            <div class="flex flex-col items-center">
-              <div id="led-weak" class="signal-led led-off mb-2"></div><span class="text-amber-200/60 text-xs">ضعيفة</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div id="led-medium" class="signal-led led-off mb-2"></div><span class="text-amber-200/60 text-xs">متوسطة</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div id="led-strong" class="signal-led led-off mb-2"></div><span class="text-amber-200/60 text-xs">قوية</span>
-            </div>
+        <div class="grid2" style="margin-top:6px">
+          <div>
+            <label>مكان البث (مدينة)</label>
+            <select id="txCity"></select>
           </div>
-          <div id="signal-status" class="text-center mt-3 text-amber-100 font-bold">لا توجد إشارة</div>
+          <div>
+            <label>مكاني (مدينة)</label>
+            <select id="rxCity"></select>
+          </div>
         </div>
 
-        <div class="speaker-grille h-16 rounded-xl"></div>
-        <div class="golden-accent h-2 rounded-full mt-6"></div>
+        <div class="grid2" style="margin-top:6px">
+          <div>
+            <label>البعد (km) (محسوب)</label>
+            <input id="dist" type="text" readonly />
+          </div>
+          <div>
+            <label>ملاحظات</label>
+            <input id="note" type="text" placeholder="اختياري" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="add">إضافة للجدول</button>
+          <button class="ghost" id="snap">ضبط التردد على المحطة</button>
+        </div>
+
+        <p class="note">
+          مدى AM مضبوط 540–1690 kHz كما في النشاط. :contentReference[oaicite:1]{index=1}
+        </p>
       </div>
     </div>
 
-    <footer class="text-center mt-8 pb-4">
-      <div class="inline-block bg-amber-900/50 backdrop-blur rounded-xl px-6 py-3">
-        <p class="text-amber-200 font-bold">تصميم نوف خبتي - الثانوية الأولى ببيشة مسارات</p>
+    <div class="card">
+      <h1>جدول جمع البيانات</h1>
+      <p class="sub">يمكنك حذف صف، أو تصدير CSV (يفتح في Excel).</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>التردد (kHz)</th>
+            <th>اسم المحطة</th>
+            <th>قوة الإشارة</th>
+            <th>مكان البث</th>
+            <th>مكاني</th>
+            <th>البعد (km)</th>
+            <th>ملاحظات</th>
+            <th>حذف</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <div class="actions">
+        <button class="btn2" id="export">تصدير CSV</button>
+        <button class="ghost" id="clear">مسح الجدول</button>
       </div>
-    </footer>
+    </div>
 
   </div>
 
-  <script>
-    // ====== روابط البث ======
-    // الرياض: m3u8 (HLS)
-    // القاهرة: قد لا يكون رابط صوت مباشر - إن فشل، استبدليه لاحقًا برابط mp3/aac/m3u8 مباشر
-    const stations = {
-      riyadh: {
-        name: 'إذاعة الرياض',
-        location: 'الرياض، السعودية',
-        frequency: 621,
-        distance: 450,
-        signalStrength: 'strong',
-        noisy: false,
-        streamUrl: 'https://edge.taghtia.com/sa/12.m3u8'
-      },
-      cairo: {
-        name: 'إذاعة القاهرة الكبرى',
-        location: 'القاهرة، مصر',
-        frequency: 1161,
-        distance: 1200,
-        signalStrength: 'weak',
-        noisy: true,
-        streamUrl: 'https://www.maspero.eg/stream/14'
-      }
-    };
+<script>
+  const $ = (id)=>document.getElementById(id);
 
-    // ====== DOM ======
-    const dialKnob = document.getElementById('dial-knob');
-    const dialTrack = document.querySelector('.dial-track');
+  // مدن (عدّلي/زيدي حسب حاجتك)
+  const CITIES = [
+    {name:"الرياض", lat:24.7136, lon:46.6753},
+    {name:"جدة", lat:21.4858, lon:39.1925},
+    {name:"مكة", lat:21.3891, lon:39.8579},
+    {name:"المدينة", lat:24.5247, lon:39.5692},
+    {name:"الدمام", lat:26.4207, lon:50.0888},
+    {name:"أبها", lat:18.2465, lon:42.5117},
+    {name:"بيشة", lat:20.0129, lon:42.6052},
+    {name:"تبوك", lat:28.3838, lon:36.5662},
+    {name:"القاهرة", lat:30.0444, lon:31.2357},
+  ];
 
-    const currentFrequencyDisplay = document.getElementById('current-frequency');
-    const stationNameEl = document.getElementById('station-name');
-    const locationEl = document.getElementById('broadcast-location');
-    const freqEl = document.getElementById('frequency-display');
-    const distEl = document.getElementById('distance-display');
-    const noiseOverlay = document.getElementById('noise-overlay');
+  function haversineKm(a,b){
+    const R=6371;
+    const toRad = d=>d*Math.PI/180;
+    const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
+    const lat1=toRad(a.lat), lat2=toRad(b.lat);
+    const s = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    return 2*R*Math.asin(Math.sqrt(s));
+  }
 
-    const ledWeak = document.getElementById('led-weak');
-    const ledMedium = document.getElementById('led-medium');
-    const ledStrong = document.getElementById('led-strong');
-    const signalStatus = document.getElementById('signal-status');
+  function estimateStrength(freq, targetFreq, distKm){
+    // نموذج تقديري بسيط (نعدّله ليتطابق مع الفيديو إذا تبين)
+    const df = Math.abs(freq - targetFreq);      // فرق التردد
+    const d  = isFinite(distKm) ? distKm : 9999; // المسافة
+    const score = Math.max(0, 100 - df*0.7 - d*0.12);
+    if (score >= 60) return "قوية";
+    if (score >= 30) return "متوسطة";
+    return "ضعيفة";
+  }
 
-    const audioEl = document.getElementById('station-audio');
-    const playBtn = document.getElementById('play-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const vol = document.getElementById('vol');
-    const audioState = document.getElementById('audio-state');
+  function paintStrength(level){
+    ["d_ok","d_mid","d_low"].forEach(id=>$(id).classList.remove("on","ok","mid","low"));
+    if(level==="قوية"){ $("d_ok").classList.add("on","ok"); }
+    else if(level==="متوسطة"){ $("d_mid").classList.add("on","mid"); }
+    else { $("d_low").classList.add("on","low"); }
+    $("strengthText").textContent = level;
+  }
 
-    audioEl.volume = Number(vol.value);
-
-    // ====== State ======
-    let currentFrequency = 540;
-    let isDragging = false;
-    let activeKey = null;
-
-    // HLS instance
-    let hls = null;
-
-    // تشويش صوتي (WebAudio) — فقط للقاهرة، ولن يعمل إلا إذا اشتغل صوت المحطة
-    let audioCtx = null;
-    let noiseNode = null;
-    let noiseGain = null;
-
-    function ensureNoiseEngine() {
-      if (audioCtx) return;
-
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-      const bufferSize = 2 * audioCtx.sampleRate;
-      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-
-      noiseNode = audioCtx.createBufferSource();
-      noiseNode.buffer = noiseBuffer;
-      noiseNode.loop = true;
-
-      noiseGain = audioCtx.createGain();
-      noiseGain.gain.value = 0; // افتراضي: صامت
-
-      noiseNode.connect(noiseGain).connect(audioCtx.destination);
-      noiseNode.start(0);
+  function fillCities(){
+    const makeOpt = (c)=> {
+      const o=document.createElement("option");
+      o.value=c.name; o.textContent=c.name;
+      return o;
     }
-
-    function destroyHls() {
-      if (hls) { try { hls.destroy(); } catch(e) {} }
-      hls = null;
-    }
-
-    function setSource(url) {
-      destroyHls();
-
-      const isM3U8 = /\.m3u8(\?|$)/i.test(url);
-
-      if (isM3U8) {
-        if (audioEl.canPlayType('application/vnd.apple.mpegurl')) {
-          audioEl.src = url; // Safari
-        } else if (window.Hls && window.Hls.isSupported()) {
-          hls = new Hls({ lowLatencyMode: true });
-          hls.loadSource(url);
-          hls.attachMedia(audioEl);
-        } else {
-          audioEl.src = url;
-        }
-      } else {
-        audioEl.src = url;
-      }
-    }
-
-    function setNoiseVisual(isNoisy) {
-      noiseOverlay.style.opacity = isNoisy ? '0.3' : '0';
-      stationNameEl.className = isNoisy
-        ? 'text-green-400 font-bold text-sm md:text-base static-text'
-        : 'text-green-400 font-bold text-sm md:text-base';
-    }
-
-    function setNoiseAudio(isNoisy, audioIsPlaying) {
-      if (!audioCtx || !noiseGain) return;
-      // ✅ الرياض صافي جدًا: 0 دائمًا
-      noiseGain.gain.value = (isNoisy && audioIsPlaying) ? 0.18 : 0;
-    }
-
-    async function playStation() {
-      if (!activeKey) {
-        audioState.textContent = 'اختاري محطة أولًا';
-        return;
-      }
-
-      const st = stations[activeKey];
-      audioState.textContent = '⏳ جاري التشغيل...';
-
-      ensureNoiseEngine();
-      await audioCtx.resume().catch(()=>{});
-
-      setSource(st.streamUrl);
-
-      try {
-        await audioEl.play();
-        audioState.textContent = '✅ يعمل الآن';
-        // تشويش صوتي فقط للقاهرة
-        setNoiseAudio(st.noisy, true);
-      } catch (e) {
-        audioState.textContent = '❌ فشل التشغيل (افتحي الصفحة عبر http:// وليس file:// أو الرابط غير مباشر)';
-        setNoiseAudio(st.noisy, false);
-      }
-    }
-
-    function pauseStation() {
-      try { audioEl.pause(); } catch(e) {}
-      audioState.textContent = 'تم الإيقاف';
-      const st = activeKey ? stations[activeKey] : null;
-      setNoiseAudio(st?.noisy, false);
-    }
-
-    playBtn.addEventListener('click', playStation);
-    pauseBtn.addEventListener('click', pauseStation);
-
-    vol.addEventListener('input', () => {
-      audioEl.volume = Number(vol.value);
+    CITIES.forEach(c=>{
+      $("txCity").appendChild(makeOpt(c));
+      $("rxCity").appendChild(makeOpt(c));
     });
+    $("txCity").value="الرياض";
+    $("rxCity").value="بيشة";
+  }
 
-    audioEl.addEventListener('error', () => {
-      audioState.textContent = '❌ تعذر تشغيل رابط الصوت لهذه المحطة';
-      const st = activeKey ? stations[activeKey] : null;
-      setNoiseAudio(st?.noisy, false);
+  function getCity(name){ return CITIES.find(c=>c.name===name); }
+
+  function refresh(){
+    $("freqLabel").textContent = $("freq").value;
+
+    const tx=getCity($("txCity").value);
+    const rx=getCity($("rxCity").value);
+    const dist = (tx && rx) ? haversineKm(tx,rx) : NaN;
+    $("dist").value = isFinite(dist) ? dist.toFixed(0) : "";
+
+    const stOpt = $("station").selectedOptions[0];
+    const targetFreq = Number(stOpt?.dataset?.f || 800);
+    const level = estimateStrength(Number($("freq").value), targetFreq, dist);
+    paintStrength(level);
+  }
+
+  $("freq").addEventListener("input", refresh);
+  $("station").addEventListener("change", refresh);
+  $("txCity").addEventListener("change", refresh);
+  $("rxCity").addEventListener("change", refresh);
+
+  $("snap").addEventListener("click", ()=>{
+    const stOpt = $("station").selectedOptions[0];
+    $("freq").value = Number(stOpt.dataset.f || 800);
+    refresh();
+  });
+
+  $("add").addEventListener("click", ()=>{
+    const stOpt = $("station").selectedOptions[0];
+    const targetFreq = Number(stOpt.dataset.f || 800);
+    const freq = Number($("freq").value);
+    const tx = $("txCity").value;
+    const rx = $("rxCity").value;
+    const dist = $("dist").value;
+    const level = $("strengthText").textContent;
+    const note = $("note").value.trim();
+
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td>${freq}</td>
+      <td>${$("station").value}</td>
+      <td>${level}</td>
+      <td>${tx}</td>
+      <td>${rx}</td>
+      <td>${dist}</td>
+      <td>${note || "—"}</td>
+      <td><button class="ghost" style="padding:6px 10px">✕</button></td>
+    `;
+    tr.querySelector("button").addEventListener("click", ()=>tr.remove());
+    $("tbody").appendChild(tr);
+  });
+
+  $("clear").addEventListener("click", ()=>{ $("tbody").innerHTML=""; });
+
+  $("export").addEventListener("click", ()=>{
+    const head = ["التردد (kHz)","اسم المحطة","قوة الإشارة","مكان البث","مكاني","البعد (km)","ملاحظات"];
+    const rows=[head];
+    [...$("tbody").querySelectorAll("tr")].forEach(tr=>{
+      const tds=[...tr.querySelectorAll("td")].slice(0,7).map(td=>td.textContent);
+      rows.push(tds);
     });
+    const csv = rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="radio_data.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
 
-    // ====== UI Logic ======
-    function updateSignalLeds(strength) {
-      ledWeak.className = 'signal-led led-off';
-      ledMedium.className = 'signal-led led-off';
-      ledStrong.className = 'signal-led led-off';
-
-      if (strength === 'weak') {
-        ledWeak.className = 'signal-led led-red';
-      } else if (strength === 'medium') {
-        ledWeak.className = 'signal-led led-red';
-        ledMedium.className = 'signal-led led-yellow';
-      } else if (strength === 'strong') {
-        ledWeak.className = 'signal-led led-red';
-        ledMedium.className = 'signal-led led-yellow';
-        ledStrong.className = 'signal-led led-green';
-      }
-    }
-
-    function updateFrequencyDisplay() {
-      const minFreq = 540;
-      const maxFreq = 1600;
-      const range = maxFreq - minFreq;
-      const percentage = (currentFrequency - minFreq) / range * 100;
-
-      dialKnob.style.left = `calc(${percentage}% - 16px)`;
-      currentFrequencyDisplay.innerHTML = `${Math.round(currentFrequency)} <span class="text-2xl">KHz</span>`;
-
-      const tolerance = 20;
-      let st = null;
-      let key = null;
-
-      if (Math.abs(currentFrequency - stations.riyadh.frequency) < tolerance) {
-        st = stations.riyadh; key = 'riyadh';
-      } else if (Math.abs(currentFrequency - stations.cairo.frequency) < tolerance) {
-        st = stations.cairo; key = 'cairo';
-      }
-
-      if (st) {
-        activeKey = key;
-        stationNameEl.textContent = st.name;
-        locationEl.textContent = st.location;
-        freqEl.textContent = `${st.frequency} KHz`;
-        distEl.textContent = `${st.distance} Km`;
-
-        setNoiseVisual(!!st.noisy); // ✅ تشويش بصري للقاهرة فقط
-        ensureNoiseEngine();
-        setNoiseAudio(!!st.noisy, !audioEl.paused); // ✅ تشويش صوتي فقط لو القاهرة + التشغيل شغال
-
-        updateSignalLeds(st.signalStrength);
-        if (st.signalStrength === 'strong') {
-          signalStatus.textContent = '✅ إشارة قوية وواضحة';
-          signalStatus.className = 'text-center mt-3 text-green-400 font-bold';
-        } else if (st.signalStrength === 'medium') {
-          signalStatus.textContent = '⚠️ إشارة متوسطة';
-          signalStatus.className = 'text-center mt-3 text-yellow-400 font-bold';
-        } else {
-          signalStatus.textContent = '📡 إشارة ضعيفة';
-          signalStatus.className = 'text-center mt-3 text-red-400 font-bold';
-        }
-
-      } else {
-        activeKey = null;
-        stationNameEl.textContent = '---';
-        locationEl.textContent = '---';
-        freqEl.textContent = '--- KHz';
-        distEl.textContent = '--- Km';
-
-        setNoiseVisual(false);
-        ensureNoiseEngine();
-        setNoiseAudio(false, false);
-
-        updateSignalLeds('none');
-        signalStatus.textContent = 'لا توجد إشارة';
-        signalStatus.className = 'text-center mt-3 text-amber-100 font-bold';
-      }
-    }
-
-    // Dial drag
-    function handleDrag(e) {
-      if (!isDragging) return;
-
-      const rect = dialTrack.getBoundingClientRect();
-      const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-      let x = clientX - rect.left;
-      x = Math.max(0, Math.min(x, rect.width));
-
-      const percentage = x / rect.width;
-      currentFrequency = 540 + percentage * (1600 - 540);
-      updateFrequencyDisplay();
-    }
-
-    dialKnob.addEventListener('mousedown', () => isDragging = true);
-    dialKnob.addEventListener('touchstart', () => isDragging = true);
-    document.addEventListener('mousemove', handleDrag);
-    document.addEventListener('touchmove', handleDrag);
-    document.addEventListener('mouseup', () => isDragging = false);
-    document.addEventListener('touchend', () => isDragging = false);
-
-    dialTrack.addEventListener('click', (e) => {
-      const rect = dialTrack.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const percentage = x / rect.width;
-      currentFrequency = 540 + percentage * (1600 - 540);
-      updateFrequencyDisplay();
-    });
-
-    // init
-    updateFrequencyDisplay();
-  </script>
+  fillCities();
+  refresh();
+</script>
 </body>
 </html>
